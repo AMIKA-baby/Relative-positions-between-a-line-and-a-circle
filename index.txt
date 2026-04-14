@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry 9: Lines & Circles Interaction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        #sunriseContainer {
+            position: relative;
+            height: 300px;
+            background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d);
+            overflow: hidden;
+            border-radius: 1rem;
+            border: 2px solid #e2e8f0;
+        }
+        #horizon {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            background: #0077be;
+            z-index: 10;
+        }
+        #sun {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: #ffcc33;
+            border-radius: 50%;
+            box-shadow: 0 0 40px #ffcc33;
+            z-index: 5;
+            transition: bottom 0.1s ease-out;
+        }
+        .drop-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .drop-zone.active {
+            border-color: #fdbb2d;
+            background: rgba(253, 187, 45, 0.3);
+        }
+        .draggable-tag {
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+        .draggable-tag:active { cursor: grabbing; }
+        
+        .comparison-btn {
+            transition: all 0.2s;
+        }
+        .comparison-btn.selected {
+            background-color: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+            transform: scale(1.1);
+        }
+        .hidden-element {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-900">
+
+    <!-- Header -->
+    <header class="bg-indigo-600 text-white p-6 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold italic">Interactive Geometry Hub</h1>
+                <p class="text-indigo-100">Relative Positions of a Line and a Circle</p>
+            </div>
+            <div class="flex gap-4">
+                <span class="bg-indigo-500 px-3 py-1 rounded-full text-sm font-medium">CLIL Mode</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b sticky top-0 z-50">
+        <div class="container mx-auto flex overflow-x-auto">
+            <button onclick="showTab('lesson1')" class="tab-btn px-6 py-4 font-semibold border-b-2 border-indigo-600 text-indigo-600 whitespace-nowrap">UNIT 1: Positions & Vocabulary</button>
+            <button onclick="showTab('lesson2')" class="tab-btn px-6 py-4 font-semibold border-b-2 border-transparent text-slate-500 hover:text-indigo-600 whitespace-nowrap">UNIT 2: Tangent Properties</button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-6">
+
+        <!-- UNIT 1 CONTENT -->
+        <section id="lesson1" class="tab-content active space-y-8">
+            
+            <!-- Activity 1: The Rising Sun -->
+            <div class="glass-morphism p-6 rounded-2xl shadow-sm border-l-4 border-yellow-400">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold flex items-center gap-2">
+                            <i data-lucide="sun" class="text-yellow-500"></i> The Rising Sun
+                        </h3>
+                        <div id="warmupInstruction" class="text-slate-600 text-sm mt-2 space-y-1 font-medium">
+                            <p>1. Observe the sunrise: How many relative positions between the horizon and the sun are there?</p>
+                            <p>2. What is the number of common points in each relative position?</p>
+                        </div>
+                    </div>
+                    <div id="scoreDisplay" class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg font-bold hidden-element">
+                        Score: 0/3
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-4 gap-6">
+                    <div class="lg:col-span-3">
+                        <div id="sunriseContainer">
+                            <div id="sun" style="bottom: 30px;"></div>
+                            <div id="horizon">
+                                <!-- Initially Hidden Drop Zones -->
+                                <div id="dropZoneContainer" class="flex justify-around items-center h-full px-4 gap-2 hidden-element">
+                                    <div id="zone-1" class="drop-zone w-1/3 h-14 rounded-lg flex flex-col items-center justify-center text-white text-[10px] font-bold text-center p-1" data-target="2">
+                                        <span>Stage 1</span>
+                                        <span class="opacity-50 italic font-normal">Drop Status Here</span>
+                                    </div>
+                                    <div id="zone-2" class="drop-zone w-1/3 h-14 rounded-lg flex flex-col items-center justify-center text-white text-[10px] font-bold text-center p-1" data-target="1">
+                                        <span>Stage 2</span>
+                                        <span class="opacity-50 italic font-normal">Drop Status Here</span>
+                                    </div>
+                                    <div id="zone-3" class="drop-zone w-1/3 h-14 rounded-lg flex flex-col items-center justify-center text-white text-[10px] font-bold text-center p-1" data-target="0">
+                                        <span>Stage 3</span>
+                                        <span class="opacity-50 italic font-normal">Drop Status Here</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 bg-white p-4 rounded-xl shadow-inner flex flex-col md:flex-row gap-4 items-center">
+                            <div class="flex-grow w-full">
+                                <label class="block text-sm font-bold text-slate-700 mb-2">Sunrise Control:</label>
+                                <input type="range" id="sunSlider" min="30" max="220" value="30" class="w-full h-3 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-yellow-500">
+                            </div>
+                            <button id="btnVerify" onclick="enableVerifyMode()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md whitespace-nowrap flex items-center gap-2">
+                                <i data-lucide="check-circle-2"></i> Verify Your Idea
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Initially Hidden Tags -->
+                    <div id="tagPanel" class="lg:col-span-1 space-y-4 bg-slate-100 p-4 rounded-xl text-center hidden-element">
+                        <p class="text-xs font-bold uppercase text-slate-500">Status Tags:</p>
+                        <div id="tag-2" draggable="true" class="draggable-tag p-3 bg-white border-2 border-orange-200 rounded-lg shadow-sm font-bold text-sm text-orange-700" data-id="2">2 Points</div>
+                        <div id="tag-1" draggable="true" class="draggable-tag p-3 bg-white border-2 border-emerald-200 rounded-lg shadow-sm font-bold text-sm text-emerald-700" data-id="1">1 Point</div>
+                        <div id="tag-0" draggable="true" class="draggable-tag p-3 bg-white border-2 border-blue-200 rounded-lg shadow-sm font-bold text-sm text-blue-700" data-id="0">0 Points</div>
+                        <button onclick="resetSunrise()" class="w-full mt-4 py-2 text-xs font-bold text-slate-500 hover:text-indigo-600 uppercase border border-slate-300 rounded-lg bg-white">Reset Challenge</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integrated Vocabulary -->
+            <div class="grid md:grid-cols-4 gap-4">
+                <div class="p-4 bg-orange-50 border border-orange-200 rounded-xl text-center">
+                    <h5 class="font-bold text-orange-700">Intersecting</h5>
+                    <p class="text-[10px] text-orange-600 italic">Cắt nhau (2 pts)</p>
+                </div>
+                <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
+                    <h5 class="font-bold text-emerald-700">Tangent</h5>
+                    <p class="text-[10px] text-emerald-600 italic">Tiếp xúc (1 pt)</p>
+                </div>
+                <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl text-center">
+                    <h5 class="font-bold text-blue-700">Disjoint</h5>
+                    <p class="text-[10px] text-blue-600 italic">Rời nhau (0 pts)</p>
+                </div>
+                <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                    <h5 class="font-bold text-slate-700">Non-intersecting</h5>
+                    <p class="text-[10px] text-slate-600 italic">Không cắt nhau</p>
+                </div>
+            </div>
+
+            <!-- Activity 2: Discovery Lab -->
+            <div class="glass-morphism p-6 rounded-2xl shadow-sm border-l-4 border-indigo-500">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i data-lucide="microscope" class="text-indigo-500"></i> Discovery Lab: Compare d and R (18')
+                </h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200">
+                        <canvas id="geoCanvas" width="400" height="300" class="w-full bg-slate-50 rounded-lg"></canvas>
+                        <div class="mt-6 px-2">
+                            <label class="block text-sm font-medium mb-3 flex justify-between">
+                                <span>Distance (d)</span>
+                                <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-xs font-bold">d = <span id="distVal">70</span></span>
+                            </label>
+                            <input type="range" id="distSlider" min="0" max="150" value="70" class="w-full accent-indigo-600">
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col space-y-4">
+                        <div class="p-6 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
+                            <p class="text-sm font-bold text-slate-500 uppercase mb-4 text-center">How does d relate to R?</p>
+                            <div class="flex items-center justify-center gap-6">
+                                <div class="text-center">
+                                    <div class="text-3xl font-black text-indigo-600 mb-1">d</div>
+                                    <div class="text-xs text-slate-400">Distance</div>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <button onclick="checkComparison('<')" id="btn-less" class="comparison-btn w-12 h-12 border-2 border-slate-200 rounded-lg font-black text-xl hover:bg-slate-50">&lt;</button>
+                                    <button onclick="checkComparison('=')" id="btn-equal" class="comparison-btn w-12 h-12 border-2 border-slate-200 rounded-lg font-black text-xl hover:bg-slate-50">=</button>
+                                    <button onclick="checkComparison('>')" id="btn-more" class="comparison-btn w-12 h-12 border-2 border-slate-200 rounded-lg font-black text-xl hover:bg-slate-50">&gt;</button>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-3xl font-black text-emerald-600 mb-1">R</div>
+                                    <div class="text-xs text-slate-400">Radius</div>
+                                </div>
+                            </div>
+                            <div id="compFeedback" class="mt-6 text-center py-2 px-4 rounded-lg hidden font-bold text-sm">
+                                Correct! Check the position below.
+                            </div>
+                        </div>
+
+                        <div id="statusBox" class="p-6 bg-indigo-50 rounded-2xl border-2 border-indigo-100 hidden-element">
+                            <p class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Position Confirmed:</p>
+                            <p id="statusLabel" class="text-2xl font-black text-indigo-900 mt-1">Intersecting</p>
+                            <p class="text-xs text-slate-500 mt-2 italic" id="pointsLabel">(2 shared points)</p>
+                        </div>
+                        
+                        <div id="promptBox" class="p-6 bg-slate-100 rounded-2xl border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 italic text-sm">
+                            Select a relation to reveal position
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- UNIT 2 CONTENT -->
+        <section id="lesson2" class="tab-content space-y-8">
+            <div class="bg-white p-8 rounded-2xl shadow-md border border-indigo-100">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="bg-indigo-600 p-3 rounded-lg text-white"><i data-lucide="ruler"></i></div>
+                    <h2 class="text-2xl font-bold text-slate-800">Intersecting Tangents</h2>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12">
+                     <div class="aspect-square bg-slate-50 border rounded-2xl flex items-center justify-center p-8">
+                         <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-xl">
+                            <circle cx="100" cy="100" r="60" fill="none" stroke="#4f46e5" stroke-width="2"/>
+                            <circle cx="100" cy="100" r="3" fill="#4f46e5"/>
+                            <line x1="190" y1="100" x2="100" y2="40" stroke="#1e293b" stroke-width="2"/>
+                            <line x1="190" y1="100" x2="100" y2="160" stroke="#1e293b" stroke-width="2"/>
+                            <line x1="100" y1="100" x2="100" y2="40" stroke="#4f46e5" stroke-dasharray="4"/>
+                            <line x1="100" y1="100" x2="100" y2="160" stroke="#4f46e5" stroke-dasharray="4"/>
+                            <text x="195" y="105" font-size="12" font-weight="bold">M</text>
+                            <text x="95" y="35" font-size="12" font-weight="bold">A</text>
+                            <text x="95" y="175" font-size="12" font-weight="bold">B</text>
+                        </svg>
+                     </div>
+                     <div class="space-y-6">
+                        <div class="p-6 bg-indigo-50 border-l-8 border-indigo-600 rounded-r-xl">
+                            <h4 class="font-bold text-indigo-900 text-lg mb-3">Key Properties:</h4>
+                            <ul class="space-y-3">
+                                <li>• MA = MB</li>
+                                <li>• OM is the bisector of ∠AMB</li>
+                                <li>• MO is the bisector of ∠AOB</li>
+                            </ul>
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function initLucide() {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            else setTimeout(initLucide, 100);
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-indigo-600', 'text-indigo-600');
+                btn.classList.add('border-transparent', 'text-slate-500');
+            });
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.remove('border-transparent', 'text-slate-500');
+            event.currentTarget.classList.add('border-indigo-600', 'text-indigo-600');
+            if(tabId === 'lesson1') drawLab();
+        }
+
+        const sun = document.getElementById('sun');
+        const sunSlider = document.getElementById('sunSlider');
+        const draggables = document.querySelectorAll('.draggable-tag');
+        const dropZones = document.querySelectorAll('.drop-zone');
+        let score = 0;
+        const correctPlacements = new Set();
+
+        sunSlider.oninput = function() {
+            const val = parseInt(this.value);
+            sun.style.bottom = val + 'px';
+            const container = document.getElementById('sunriseContainer');
+            if (val < 45) container.style.background = 'linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d)';
+            else if (val < 90) container.style.background = 'linear-gradient(to bottom, #87CEEB, #E0F2F1)';
+            else container.style.background = 'linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%)';
+        };
+
+        function enableVerifyMode() {
+            document.getElementById('dropZoneContainer').classList.remove('hidden-element');
+            document.getElementById('tagPanel').classList.remove('hidden-element');
+            document.getElementById('scoreDisplay').classList.remove('hidden-element');
+            document.getElementById('warmupInstruction').innerHTML = `
+                <p>Drag and drop the correct common points tag into the corresponding stage to verify your idea!</p>
+            `;
+            document.getElementById('btnVerify').classList.add('hidden-element');
+            initLucide();
+        }
+
+        draggables.forEach(tag => {
+            tag.ondragstart = (e) => {
+                e.dataTransfer.setData('text/plain', tag.dataset.id);
+                tag.style.opacity = '0.5';
+            };
+            tag.ondragend = () => tag.style.opacity = '1';
+        });
+
+        dropZones.forEach(zone => {
+            zone.ondragover = (e) => { e.preventDefault(); zone.classList.add('active'); };
+            zone.ondragleave = () => zone.classList.remove('active');
+            zone.ondrop = (e) => {
+                e.preventDefault();
+                zone.classList.remove('active');
+                const tagId = e.dataTransfer.getData('text/plain');
+                const targetId = zone.dataset.target;
+
+                if (tagId === targetId) {
+                    if (!correctPlacements.has(tagId)) {
+                        score++;
+                        correctPlacements.add(tagId);
+                        updateScore();
+                    }
+                    zone.classList.add('bg-green-600', 'border-green-600');
+                    zone.innerHTML = `<span class="text-white text-[12px] font-bold">${document.querySelector(`[data-id="${tagId}"]`).innerText}</span>`;
+                    document.querySelector(`[data-id="${tagId}"]`).style.visibility = 'hidden';
+                } else {
+                    zone.classList.add('bg-red-600');
+                    setTimeout(() => zone.classList.remove('bg-red-600'), 1000);
+                }
+            };
+        });
+
+        function updateScore() {
+            const display = document.getElementById('scoreDisplay');
+            display.innerText = `Score: ${score}/3`;
+            if (score === 3) display.innerText = "Excellent! 🎉";
+        }
+
+        function resetSunrise() {
+            score = 0;
+            correctPlacements.clear();
+            updateScore();
+            dropZones.forEach(zone => {
+                const step = zone.id.split('-')[1];
+                zone.className = "drop-zone w-1/3 h-14 rounded-lg flex flex-col items-center justify-center text-white text-[10px] font-bold text-center p-1";
+                zone.innerHTML = `<span>Stage ${step}</span><span class="opacity-50 italic font-normal">Drop Status Here</span>`;
+            });
+            draggables.forEach(tag => tag.style.visibility = 'visible');
+            sunSlider.value = 30;
+            sunSlider.oninput();
+        }
+
+        const canvas = document.getElementById('geoCanvas');
+        const ctx = canvas.getContext('2d');
+        const distSlider = document.getElementById('distSlider');
+        const distVal = document.getElementById('distVal');
+        const statusLabel = document.getElementById('statusLabel');
+        const pointsLabel = document.getElementById('pointsLabel');
+        const feedback = document.getElementById('compFeedback');
+        const statusBox = document.getElementById('statusBox');
+        const promptBox = document.getElementById('promptBox');
+        const R = 70;
+        const centerX = 160;
+        const centerY = 150;
+
+        function drawLab() {
+            const d = parseInt(distSlider.value);
+            distVal.innerText = d;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.strokeStyle = '#f1f5f9';
+            for(let i=0; i<canvas.width; i+=25) {
+                ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,300); ctx.stroke();
+            }
+
+            ctx.beginPath(); ctx.arc(centerX, centerY, R, 0, Math.PI * 2);
+            ctx.strokeStyle = '#10b981'; ctx.setLineDash([]); ctx.lineWidth = 3; ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(centerX, centerY); ctx.lineTo(centerX, centerY - R);
+            ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.fillStyle = '#065f46'; ctx.font = 'bold 12px sans-serif'; ctx.fillText(`R = ${R}`, centerX + 5, centerY - R/2);
+
+            const lineX = centerX + d;
+            ctx.beginPath(); ctx.moveTo(centerX, centerY); ctx.lineTo(lineX, centerY);
+            ctx.strokeStyle = '#4f46e5'; ctx.setLineDash([5, 5]); ctx.stroke();
+            ctx.fillText(`d = ${d}`, centerX + d/2 - 15, centerY + 15);
+            ctx.beginPath(); ctx.setLineDash([]); ctx.moveTo(lineX, 20); ctx.lineTo(lineX, 280);
+            ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 4; ctx.stroke();
+            
+            ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.arc(centerX, centerY, 4, 0, Math.PI * 2); ctx.fill();
+            ctx.fillText("O", centerX - 15, centerY + 5);
+
+            statusBox.classList.add('hidden-element');
+            promptBox.classList.remove('hidden');
+            feedback.classList.add('hidden');
+            document.querySelectorAll('.comparison-btn').forEach(btn => btn.classList.remove('selected'));
+        }
+
+        function checkComparison(symbol) {
+            const d = parseInt(distSlider.value);
+            let correct = false;
+            document.querySelectorAll('.comparison-btn').forEach(btn => btn.classList.remove('selected'));
+            
+            if (symbol === '<' && d < R) correct = true;
+            else if (symbol === '=' && d === R) correct = true;
+            else if (symbol === '>' && d > R) correct = true;
+
+            event.currentTarget.classList.add('selected');
+            feedback.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
+            
+            if (correct) {
+                feedback.innerText = "Correct! Position revealed.";
+                feedback.classList.add('bg-green-100', 'text-green-700');
+                statusBox.classList.remove('hidden-element');
+                promptBox.classList.add('hidden');
+                
+                if (d < R) { statusLabel.innerText = "Intersecting"; pointsLabel.innerText = "(2 shared points)"; }
+                else if (d === R) { statusLabel.innerText = "Tangent"; pointsLabel.innerText = "(1 shared point)"; }
+                else { statusLabel.innerText = "Disjoint / Separate"; pointsLabel.innerText = "(0 shared points)"; }
+            } else {
+                feedback.innerText = "Incorrect. Try another relation!";
+                feedback.classList.add('bg-red-100', 'text-red-700');
+                statusBox.classList.add('hidden-element');
+                promptBox.classList.remove('hidden');
+            }
+        }
+
+        distSlider.oninput = drawLab;
+        window.onload = () => {
+            initLucide();
+            sunSlider.oninput();
+            drawLab();
+        };
+    </script>
+</body>
+</html>
