@@ -73,6 +73,14 @@
         .math-style { font-family: "Times New Roman", serif; font-style: italic; }
         .right-angle { stroke: #475569; stroke-width: 1.5; fill: none; }
         .drop-zone span, .drop-zone b { pointer-events: none; }
+        
+        /* Animation cho Unit 1 wrong feedback */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .shake-animation { animation: shake 0.3s ease-in-out; }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-900">
@@ -83,6 +91,9 @@
             <div>
                 <h1 class="text-2xl font-bold italic">Interactive Geometry Hub</h1>
                 <p class="text-indigo-100">Relative Positions of a Line and a Circle</p>
+            </div>
+            <div class="flex gap-4">
+                <span class="bg-indigo-500 px-3 py-1 rounded-full text-sm font-medium">CLIL Mode</span>
             </div>
         </div>
     </header>
@@ -186,6 +197,9 @@
                     </div>
                     <div class="flex flex-col space-y-4">
                         <div class="p-6 bg-white rounded-2xl border-2 border-slate-200 shadow-sm text-center">
+                            <p class="text-sm font-bold text-slate-500 mb-6 text-center">
+                                What is the relation of <span class="math-style text-indigo-600 text-lg">d</span> to <span class="math-style text-emerald-600 text-lg">R</span>?
+                            </p>
                             <div class="flex items-center justify-center gap-6">
                                 <div class="text-4xl font-black text-indigo-600 math-style">d</div>
                                 <div class="flex flex-col gap-2">
@@ -238,7 +252,7 @@
                             </svg>
                             <p class="text-sm font-bold text-slate-500 mt-2">Figure 1: Non-intersecting (<span class="math-style">OH > R</span>)</p>
                         </div>
-                        <div class="indicator-drop-group grid gap-3">
+                        <div class="indicator-drop-group grid gap-3" data-fig="1">
                             <div class="drop-zone" data-correct="perp">Drop criteria here</div>
                             <div class="drop-zone" data-correct="line_a">Drop criteria here</div>
                             <div class="drop-zone" data-correct="greater">Drop criteria here</div>
@@ -260,7 +274,7 @@
                             </svg>
                             <p class="text-sm font-bold text-emerald-600 mt-2">Figure 2: Tangent (<span class="math-style">OH = R</span>)</p>
                         </div>
-                        <div class="indicator-drop-group grid gap-3">
+                        <div class="indicator-drop-group grid gap-3" data-fig="2">
                             <div class="drop-zone" data-correct="perp">Drop criteria here</div>
                             <div class="drop-zone" data-correct="line_a">Drop criteria here</div>
                             <div class="drop-zone" data-correct="equal">Drop criteria here</div>
@@ -308,30 +322,88 @@
 
         <!-- UNIT 3 -->
         <section id="unit3" class="tab-content space-y-8">
+            
+            <!-- Video Tutorial -->
+            <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-indigo-500">
+                <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i data-lucide="youtube" class="text-indigo-600"></i> Tutorial: How to draw two intersecting tangents
+                </h3>
+                
+                <div class="aspect-video bg-slate-100 rounded-xl flex items-center justify-center border-2 border-slate-300 relative overflow-hidden">
+                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/9FEZ84pJslI?start=7" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen class="absolute inset-0"></iframe>
+                </div>
+            </div>
+
+            <!-- Interactive Discovery Activity -->
             <div class="bg-white p-8 rounded-2xl shadow-md border border-indigo-100">
                 <div class="flex items-center gap-4 mb-6">
                     <div class="bg-indigo-600 p-3 rounded-lg text-white"><i data-lucide="ruler"></i></div>
-                    <h2 class="text-2xl font-bold text-slate-800">Intersecting Tangents</h2>
+                    <h2 class="text-2xl font-bold text-slate-800">Discovery: Tangent Properties</h2>
                 </div>
+                <p class="text-slate-600 mb-6 font-medium italic">Use the measurement tools below to discover the hidden properties of two intersecting tangents.</p>
+                
                 <div class="grid md:grid-cols-2 gap-12">
-                     <div class="aspect-square bg-slate-50 border rounded-2xl flex items-center justify-center p-8">
-                         <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-xl">
-                            <circle cx="100" cy="100" r="60" fill="none" stroke="#4f46e5" stroke-width="2"/>
-                            <circle cx="100" cy="100" r="3" fill="#4f46e5"/>
-                            <line x1="190" y1="100" x2="100" y2="40" stroke="#1e293b" stroke-width="2"/>
-                            <line x1="190" y1="100" x2="100" y2="160" stroke="#1e293b" stroke-width="2"/>
-                            <text x="195" y="105" font-size="12" font-weight="bold">M</text>
-                            <text x="95" y="35" font-size="12" font-weight="bold">A</text>
-                            <text x="95" y="175" font-size="12" font-weight="bold">B</text>
+                     <div class="aspect-square bg-slate-50 border-2 border-slate-200 rounded-2xl flex items-center justify-center p-8 relative shadow-inner">
+                         <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-lg overflow-visible">
+                            <!-- Circle O & Radius -->
+                            <circle cx="100" cy="100" r="50" fill="none" stroke="#6366f1" stroke-width="2.5"/>
+                            <circle cx="100" cy="100" r="3" fill="#6366f1"/>
+                            
+                            <!-- Bán kính -->
+                            <line x1="100" y1="100" x2="131.2" y2="61" stroke="#94a3b8" stroke-dasharray="4" stroke-width="2"/>
+                            <line x1="100" y1="100" x2="131.2" y2="139" stroke="#94a3b8" stroke-dasharray="4" stroke-width="2"/>
+                            
+                            <!-- Đường trung tâm OM -->
+                            <line x1="100" y1="100" x2="180" y2="100" stroke="#cbd5e1" stroke-width="2"/>
+                            
+                            <!-- Tiếp tuyến MA, MB -->
+                            <line id="vis-MA" x1="180" y1="100" x2="131.2" y2="61" stroke="#334155" stroke-width="2.5"/>
+                            <line id="vis-MB" x1="180" y1="100" x2="131.2" y2="139" stroke="#334155" stroke-width="2.5"/>
+                            
+                            <!-- Ký hiệu góc vuông (tính toán chuẩn xác) -->
+                            <path d="M 137.4 66 L 132.4 72.2 L 126.2 67.2" class="right-angle"/>
+                            <path d="M 137.4 134 L 132.4 127.8 L 126.2 132.8" class="right-angle"/>
+
+                            <text x="188" y="104" class="math-style font-bold text-slate-800" font-size="12">M</text>
+                            <text x="123" y="52" class="math-style font-bold text-slate-800" font-size="12">A</text>
+                            <text x="123" y="156" class="math-style font-bold text-slate-800" font-size="12">B</text>
+                            <text x="85" y="104" class="math-style font-bold text-slate-800" font-size="12">O</text>
                         </svg>
                      </div>
                      <div class="space-y-6">
-                        <div class="p-6 bg-indigo-50 border-l-8 border-indigo-600 rounded-r-xl">
-                            <h4 class="font-bold text-indigo-900 text-lg mb-3">Key Properties:</h4>
-                            <ul class="space-y-3 font-medium">
-                                <li>• MA = MB</li>
-                                <li>• OM is the bisector of ∠AMB</li>
-                                <li>• MO is the bisector of ∠AOB</li>
+                        <div class="grid grid-cols-1 gap-3">
+                            <button onclick="measureProp('segments')" class="bg-white border-2 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-400 rounded-xl p-4 font-bold text-indigo-700 flex justify-between items-center transition-all">
+                                <span>Measure lengths MA & MB</span>
+                                <i data-lucide="ruler"></i>
+                            </button>
+                            <button onclick="measureProp('anglesM')" class="bg-white border-2 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-400 rounded-xl p-4 font-bold text-indigo-700 flex justify-between items-center transition-all">
+                                <span>Measure angles at point M</span>
+                                <i data-lucide="scan-line"></i>
+                            </button>
+                            <button onclick="measureProp('anglesO')" class="bg-white border-2 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-400 rounded-xl p-4 font-bold text-indigo-700 flex justify-between items-center transition-all">
+                                <span>Measure angles at center O</span>
+                                <i data-lucide="circle-dashed"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="measureOutputBox" class="h-16 flex items-center justify-center bg-slate-100 text-slate-500 font-bold rounded-xl border border-slate-200 text-sm">
+                            Click a button above to measure
+                        </div>
+
+                        <div class="p-6 bg-indigo-50 border-l-8 border-indigo-600 rounded-r-xl shadow-sm">
+                            <h4 class="font-bold text-indigo-900 text-lg mb-4 flex items-center gap-2">
+                                <i data-lucide="book-open"></i> Key Properties Log:
+                            </h4>
+                            <ul class="space-y-4 font-medium text-slate-600">
+                                <li id="prop-1" class="flex items-center gap-3 opacity-40 transition-all duration-500">
+                                    <i data-lucide="lock" class="w-5 h-5"></i> <span>Tangents are equal</span>
+                                </li>
+                                <li id="prop-2" class="flex items-center gap-3 opacity-40 transition-all duration-500">
+                                    <i data-lucide="lock" class="w-5 h-5"></i> <span>OM bisects ∠AMB</span>
+                                </li>
+                                <li id="prop-3" class="flex items-center gap-3 opacity-40 transition-all duration-500">
+                                    <i data-lucide="lock" class="w-5 h-5"></i> <span>MO bisects ∠AOB</span>
+                                </li>
                             </ul>
                         </div>
                      </div>
@@ -383,10 +455,12 @@
 
         function resetChallenge() {
             currentScore = 0;
+            correctPlacements.clear();
             document.getElementById('currentScore').innerText = "0";
             document.getElementById('excellentMsg').classList.add('hidden-element');
             document.querySelectorAll('#unit1 .drop-zone').forEach(zone => {
-                zone.classList.remove('bg-green-600', 'text-white');
+                zone.classList.remove('bg-green-600', 'text-white', 'border-green-600');
+                zone.classList.add('border-dashed');
                 zone.innerHTML = `<span>${zone.id.replace('szone-', 'Stage ')}</span><span class="opacity-50 italic font-normal text-[8px]">Drop status tag</span>`;
             });
             document.querySelectorAll('#tagPanel .draggable-tag').forEach(t => t.style.visibility = 'visible');
@@ -395,7 +469,7 @@
         const canvas = document.getElementById('geoCanvas');
         const ctx = canvas.getContext('2d');
         const distSlider = document.getElementById('distSlider');
-        // Kích thước vẽ (Scale up)
+        // Kích thước vẽ
         const R = 110; 
         const centerX = 180; 
         const centerY = 200;
@@ -419,7 +493,7 @@
             ctx.font = "italic bold 20px serif"; 
             ctx.fillText("O", centerX - 25, centerY - 10);
 
-            // Vẽ bán kính R cố định (góc 45 độ hướng lên)
+            // Vẽ bán kính R
             const angleR = -Math.PI / 4;
             const rx = centerX + R * Math.cos(angleR);
             const ry = centerY + R * Math.sin(angleR);
@@ -445,7 +519,7 @@
             ctx.fillStyle = '#f43f5e';
             ctx.fillText("a", lineX + 15, 60);
 
-            // Vẽ đoạn d (Khoảng cách OH)
+            // Vẽ đoạn d
             ctx.setLineDash([6, 4]);
             ctx.beginPath(); 
             ctx.moveTo(centerX, centerY); 
@@ -460,7 +534,6 @@
             ctx.beginPath(); ctx.arc(lineX, centerY, 3, 0, Math.PI*2); ctx.fill();
             ctx.fillText("H", lineX + 10, centerY + 25);
 
-            // Hiển thị d trực tiếp trên hình
             ctx.fillStyle = '#4f46e5';
             ctx.font = "bold 18px serif";
             const dText = "d = " + d;
@@ -474,7 +547,6 @@
             const pointsLabel = document.getElementById('pointsLabel');
             const statusBox = document.getElementById('statusBox');
 
-            // Reset style nút
             document.querySelectorAll('.comparison-btn').forEach(b => b.classList.remove('selected'));
             btnEl.classList.add('selected');
 
@@ -482,7 +554,7 @@
             feedback.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
             
             if(correct) {
-                feedback.innerText = "Correct! Relationship identified."; 
+                feedback.innerText = "Correct! Position revealed."; 
                 feedback.classList.add('bg-green-100', 'text-green-700');
                 statusBox.classList.remove('hidden-element');
                 
@@ -503,8 +575,10 @@
             }
         }
 
-        /* --- UNIT 2 LOGIC --- */
+        /* --- DRAG & DROP LOGIC --- */
         let draggedEl = null;
+        let correctPlacements = new Set(); // Theo dõi các thẻ thả đúng ở Unit 1
+
         function setupDragDrop() {
             document.querySelectorAll('.draggable-tag').forEach(tag => {
                 tag.addEventListener('dragstart', (e) => {
@@ -513,34 +587,61 @@
                     e.dataTransfer.setData('inner', tag.innerHTML);
                 });
             });
+
             document.querySelectorAll('.drop-zone').forEach(zone => {
                 zone.addEventListener('dragover', e => e.preventDefault());
                 zone.addEventListener('drop', e => {
+                    e.preventDefault();
                     const type = e.dataTransfer.getData('type');
                     const inner = e.dataTransfer.getData('inner');
                     
-                    if(zone.id.startsWith('szone-')) { // Logic Unit 1
+                    // Logic Unit 1 (Kiểm tra đúng sai ngay lúc thả)
+                    if(zone.id.startsWith('szone-')) { 
                         if(type === zone.dataset.target) {
-                            zone.classList.add('bg-green-600', 'text-white');
-                            zone.innerHTML = inner;
+                            zone.classList.remove('border-dashed', 'shake-animation', 'bg-red-500', 'border-red-600');
+                            zone.classList.add('bg-green-600', 'text-white', 'border-green-600', 'border-solid');
+                            zone.innerHTML = `<span class="text-white text-[12px] font-bold">${inner}</span>`;
                             if(draggedEl) draggedEl.style.visibility = 'hidden';
-                            currentScore++;
-                            document.getElementById('currentScore').innerText = currentScore;
-                            if(currentScore === 3) document.getElementById('excellentMsg').classList.remove('hidden-element');
+                            
+                            if (!correctPlacements.has(type)) {
+                                currentScore++;
+                                correctPlacements.add(type);
+                                document.getElementById('currentScore').innerText = currentScore;
+                                if(currentScore === 3) document.getElementById('excellentMsg').classList.remove('hidden-element');
+                            }
+                        } else {
+                            // Cảnh báo chớp X đỏ nếu thả sai
+                            const originalHTML = zone.innerHTML;
+                            zone.classList.add('bg-red-500', 'text-white', 'border-red-600', 'border-solid', 'shake-animation');
+                            zone.innerHTML = `<div class="flex flex-col items-center"><i data-lucide="x-circle" class="w-6 h-6 mb-1"></i><span class="text-[10px] font-bold">Incorrect</span></div>`;
+                            initLucide();
+                            setTimeout(() => {
+                                zone.classList.remove('bg-red-500', 'text-white', 'border-red-600', 'border-solid', 'shake-animation');
+                                zone.innerHTML = originalHTML;
+                            }, 1000);
                         }
-                    } else { // Logic Unit 2
+                    } 
+                    // Logic Unit 2 (Thả thoải mái, ấn Check sau)
+                    else { 
                         zone.innerHTML = inner;
                         zone.dataset.currentType = type;
-                        zone.classList.add('bg-indigo-600', 'text-white', 'border-solid');
+                        zone.classList.remove('text-slate-400', 'italic', 'correct', 'wrong', 'border-dashed');
+                        zone.classList.add('bg-indigo-600', 'text-white', 'border-solid', 'border-indigo-600');
                         if(draggedEl) draggedEl.style.visibility = 'hidden';
                     }
                 });
             });
         }
 
+        /* --- UNIT 2 INDICATOR CHECK --- */
         function checkIndicatorAnswers() {
             document.querySelectorAll('#unit2 .drop-zone').forEach(zone => {
-                if(zone.dataset.currentType === zone.dataset.correct) {
+                const current = zone.dataset.currentType;
+                if(!current) {
+                    zone.classList.add('wrong');
+                    return;
+                }
+                if(current === zone.dataset.correct) {
                     zone.classList.remove('wrong');
                     zone.classList.add('correct');
                 } else {
@@ -553,12 +654,57 @@
         function resetIndicators() {
             document.querySelectorAll('#unit2 .drop-zone').forEach(zone => {
                 zone.innerHTML = "Drop criteria here";
-                zone.className = "drop-zone";
+                zone.classList.remove('correct', 'wrong', 'bg-indigo-600', 'text-white', 'border-indigo-600', 'border-solid');
+                zone.classList.add('text-slate-400', 'italic', 'border-dashed');
                 delete zone.dataset.currentType;
             });
             document.querySelectorAll('#criteriaBank .draggable-tag').forEach(t => t.style.visibility = 'visible');
         }
 
+        /* --- UNIT 3 LOGIC (PROPERTY DISCOVERY) --- */
+        let measured = { segments: false, anglesM: false, anglesO: false };
+
+        function measureProp(target) {
+            const outBox = document.getElementById('measureOutputBox');
+            outBox.classList.remove('bg-slate-100', 'text-slate-500');
+            outBox.classList.add('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+
+            if(target === 'segments') {
+                measured.segments = true;
+                outBox.innerHTML = 'Measurement: <span class="math-style mx-2">MA = 62.4 cm</span> and <span class="math-style ml-2">MB = 62.4 cm</span>';
+                document.getElementById('vis-MA').setAttribute('stroke', '#10b981');
+                document.getElementById('vis-MB').setAttribute('stroke', '#10b981');
+            } else if(target === 'anglesM') {
+                measured.anglesM = true;
+                outBox.innerHTML = 'Measurement: <span class="math-style mx-2">∠AMO ≈ 38.7°</span> and <span class="math-style ml-2">∠BMO ≈ 38.7°</span>';
+            } else if(target === 'anglesO') {
+                measured.anglesO = true;
+                outBox.innerHTML = 'Measurement: <span class="math-style mx-2">∠AOM ≈ 51.3°</span> and <span class="math-style ml-2">∠BOM ≈ 51.3°</span>';
+            }
+
+            unlockProperties();
+        }
+
+        function unlockProperties() {
+            if(measured.segments) {
+                const p1 = document.getElementById('prop-1');
+                p1.classList.remove('opacity-40');
+                p1.innerHTML = '<i data-lucide="unlock" class="text-emerald-500 w-5 h-5"></i> <span class="text-emerald-700 font-bold math-style">MA = MB</span>';
+            }
+            if(measured.anglesM) {
+                const p2 = document.getElementById('prop-2');
+                p2.classList.remove('opacity-40');
+                p2.innerHTML = '<i data-lucide="unlock" class="text-emerald-500 w-5 h-5"></i> <span class="text-emerald-700 font-bold text-sm">OM bisects ∠AMB</span>';
+            }
+            if(measured.anglesO) {
+                const p3 = document.getElementById('prop-3');
+                p3.classList.remove('opacity-40');
+                p3.innerHTML = '<i data-lucide="unlock" class="text-emerald-500 w-5 h-5"></i> <span class="text-emerald-700 font-bold text-sm">MO bisects ∠AOB</span>';
+            }
+            initLucide();
+        }
+
+        // Init
         distSlider.oninput = drawLab;
         window.onload = () => { initLucide(); drawLab(); setupDragDrop(); };
     </script>
