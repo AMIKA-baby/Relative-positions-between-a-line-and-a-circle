@@ -43,34 +43,36 @@
             z-index: 5;
             transition: bottom 0.1s ease-out;
         }
+
+        /* Unit 2 Styles */
         .drop-zone {
-            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border: 2px dashed #cbd5e1;
             transition: all 0.3s;
-            background: rgba(255, 255, 255, 0.1);
+            background: #ffffff;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            border-radius: 10px;
+            font-size: 13px;
+            text-align: center;
+            font-weight: 600;
         }
-        .drop-zone.active {
-            border-color: #fdbb2d;
-            background: rgba(253, 187, 45, 0.3);
-        }
-        .draggable-tag {
-            cursor: grab;
-            user-select: none;
-            touch-action: none;
-        }
-        .draggable-tag:active { cursor: grabbing; }
+        .drop-zone.active { border-color: #4f46e5; background: #eef2ff; }
+        .drop-zone.correct { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; border-style: solid; }
+        .drop-zone.wrong { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; border-style: solid; }
         
-        .comparison-btn {
-            transition: all 0.2s;
-        }
-        .comparison-btn.selected {
-            background-color: #4f46e5;
-            color: white;
-            border-color: #4f46e5;
-            transform: scale(1.1);
-        }
-        .hidden-element {
-            display: none !important;
-        }
+        .draggable-tag { cursor: grab; user-select: none; touch-action: none; transition: transform 0.2s, box-shadow 0.2s; }
+        .draggable-tag:active { cursor: grabbing; transform: scale(0.95); }
+        
+        .comparison-btn { transition: all 0.2s; border-color: #e2e8f0; }
+        .comparison-btn.selected { background-color: #4f46e5; color: white; border-color: #4f46e5; transform: scale(1.1); font-weight: 800; }
+        .hidden-element { display: none !important; }
+
+        .math-style { font-family: "Times New Roman", serif; font-style: italic; }
+        .right-angle { stroke: #475569; stroke-width: 1.5; fill: none; }
+        .drop-zone span, .drop-zone b { pointer-events: none; }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-900">
@@ -82,26 +84,23 @@
                 <h1 class="text-2xl font-bold italic">Interactive Geometry Hub</h1>
                 <p class="text-indigo-100">Relative Positions of a Line and a Circle</p>
             </div>
-            <div class="flex gap-4">
-                <span class="bg-indigo-500 px-3 py-1 rounded-full text-sm font-medium">CLIL Mode</span>
-            </div>
         </div>
     </header>
 
     <!-- Navigation -->
-    <nav class="bg-white border-b sticky top-0 z-50">
+    <nav class="bg-white border-b sticky top-0 z-50 shadow-sm">
         <div class="container mx-auto flex overflow-x-auto">
-            <button onclick="showTab('lesson1')" class="tab-btn px-6 py-4 font-semibold border-b-2 border-indigo-600 text-indigo-600 whitespace-nowrap">UNIT 1: Positions & Vocabulary</button>
-            <button onclick="showTab('lesson2')" class="tab-btn px-6 py-4 font-semibold border-b-2 border-transparent text-slate-500 hover:text-indigo-600 whitespace-nowrap">UNIT 2: Tangent Properties</button>
+            <button onclick="showTab('unit1')" class="tab-btn px-6 py-4 font-semibold border-b-2 border-indigo-600 text-indigo-600 whitespace-nowrap">UNIT 1: Positions & Vocabulary</button>
+            <button onclick="showTab('unit2')" class="tab-btn px-6 py-4 font-semibold border-b-2 border-transparent text-slate-500 hover:text-indigo-600 whitespace-nowrap">UNIT 2: Indicators</button>
+            <button onclick="showTab('unit3')" class="tab-btn px-6 py-4 font-semibold border-b-2 border-transparent text-slate-500 hover:text-indigo-600 whitespace-nowrap">UNIT 3: Tangent Properties</button>
         </div>
     </nav>
 
     <main class="container mx-auto p-6">
 
-        <!-- UNIT 1 CONTENT -->
-        <section id="lesson1" class="tab-content active space-y-8">
-            
-            <!-- Activity 1: The Rising Sun -->
+        <!-- UNIT 1 -->
+        <section id="unit1" class="tab-content active space-y-8">
+            <!-- Sunrise Section -->
             <div class="glass-morphism p-6 rounded-2xl shadow-sm border-l-4 border-yellow-400">
                 <div class="flex justify-between items-start mb-6">
                     <div>
@@ -114,7 +113,7 @@
                         </div>
                     </div>
                     <div id="scoreDisplay" class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg font-bold hidden-element">
-                        Score: 0/3
+                        Score: <span id="currentScore">0</span>/3
                     </div>
                 </div>
 
@@ -123,20 +122,24 @@
                         <div id="sunriseContainer">
                             <div id="sun" style="bottom: 30px;"></div>
                             <div id="horizon">
-                                <!-- Initially Hidden Drop Zones -->
                                 <div id="dropZoneContainer" class="flex justify-around items-center h-full px-4 gap-2 hidden-element">
-                                    <div id="zone-1" class="drop-zone w-1/3 h-14 rounded-lg flex flex-col items-center justify-center text-white text-[10px] font-bold text-center p-1" data-target="2">
+                                    <div id="szone-1" class="drop-zone w-1/3 h-14 rounded-lg flex flex-col items-center justify-center text-slate-400 text-[10px] font-bold text-center p-1" data-target="2">
                                         <span>Stage 1</span>
-                                        <span class="opacity-50 italic font-normal">Drop Status Here</span>
+                                        <span class="opacity-50 italic font-normal text-[8px]">Drop status tag</span>
                                     </div>
-                                    <div id="zone-2" class="drop-zone w-1/3 h-14 rounded-lg flex flex-col items-center justify-center text-white text-[10px] font-bold text-center p-1" data-target="1">
+                                    <div id="szone-2" class="drop-zone w-1/3 h-14 rounded-lg flex flex-col items-center justify-center text-slate-400 text-[10px] font-bold text-center p-1" data-target="1">
                                         <span>Stage 2</span>
-                                        <span class="opacity-50 italic font-normal">Drop Status Here</span>
+                                        <span class="opacity-50 italic font-normal text-[8px]">Drop status tag</span>
                                     </div>
-                                    <div id="zone-3" class="drop-zone w-1/3 h-14 rounded-lg flex flex-col items-center justify-center text-white text-[10px] font-bold text-center p-1" data-target="0">
+                                    <div id="szone-3" class="drop-zone w-1/3 h-14 rounded-lg flex flex-col items-center justify-center text-slate-400 text-[10px] font-bold text-center p-1" data-target="0">
                                         <span>Stage 3</span>
-                                        <span class="opacity-50 italic font-normal">Drop Status Here</span>
+                                        <span class="opacity-50 italic font-normal text-[8px]">Drop status tag</span>
                                     </div>
+                                </div>
+                            </div>
+                            <div id="excellentMsg" class="absolute inset-0 flex items-center justify-center pointer-events-none hidden-element z-20">
+                                <div class="bg-white/90 px-8 py-4 rounded-full shadow-2xl border-2 border-yellow-400 text-yellow-600 font-black text-3xl animate-bounce">
+                                    EXCELLENT! 🌟
                                 </div>
                             </div>
                         </div>
@@ -145,99 +148,166 @@
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Sunrise Control:</label>
                                 <input type="range" id="sunSlider" min="30" max="220" value="30" class="w-full h-3 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-yellow-500">
                             </div>
-                            <button id="btnVerify" onclick="enableVerifyMode()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md whitespace-nowrap flex items-center gap-2">
-                                <i data-lucide="check-circle-2"></i> Verify Your Idea
-                            </button>
+                            <div class="flex gap-2">
+                                <button id="btnVerify" onclick="enableVerifyMode()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md flex items-center gap-2">
+                                    <i data-lucide="check-circle-2"></i> Verify Your Idea
+                                </button>
+                                <button id="btnResetChallenge" onclick="resetChallenge()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 px-4 rounded-xl transition-all hidden-element">
+                                    Reset Challenge
+                                </button>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Initially Hidden Tags -->
                     <div id="tagPanel" class="lg:col-span-1 space-y-4 bg-slate-100 p-4 rounded-xl text-center hidden-element">
                         <p class="text-xs font-bold uppercase text-slate-500">Status Tags:</p>
-                        <div id="tag-2" draggable="true" class="draggable-tag p-3 bg-white border-2 border-orange-200 rounded-lg shadow-sm font-bold text-sm text-orange-700" data-id="2">2 Points</div>
-                        <div id="tag-1" draggable="true" class="draggable-tag p-3 bg-white border-2 border-emerald-200 rounded-lg shadow-sm font-bold text-sm text-emerald-700" data-id="1">1 Point</div>
-                        <div id="tag-0" draggable="true" class="draggable-tag p-3 bg-white border-2 border-blue-200 rounded-lg shadow-sm font-bold text-sm text-blue-700" data-id="0">0 Points</div>
-                        <button onclick="resetSunrise()" class="w-full mt-4 py-2 text-xs font-bold text-slate-500 hover:text-indigo-600 uppercase border border-slate-300 rounded-lg bg-white">Reset Challenge</button>
+                        <div draggable="true" class="draggable-tag p-3 bg-white border-2 border-orange-200 rounded-lg shadow-sm font-bold text-sm text-orange-700" data-id="2">2 Points</div>
+                        <div draggable="true" class="draggable-tag p-3 bg-white border-2 border-emerald-200 rounded-lg shadow-sm font-bold text-sm text-emerald-700" data-id="1">1 Point</div>
+                        <div draggable="true" class="draggable-tag p-3 bg-white border-2 border-blue-200 rounded-lg shadow-sm font-bold text-sm text-blue-700" data-id="0">0 Points</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Integrated Vocabulary -->
-            <div class="grid md:grid-cols-4 gap-4">
-                <div class="p-4 bg-orange-50 border border-orange-200 rounded-xl text-center">
-                    <h5 class="font-bold text-orange-700">Intersecting</h5>
-                    <p class="text-[10px] text-orange-600 italic">Cắt nhau (2 pts)</p>
-                </div>
-                <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
-                    <h5 class="font-bold text-emerald-700">Tangent</h5>
-                    <p class="text-[10px] text-emerald-600 italic">Tiếp xúc (1 pt)</p>
-                </div>
-                <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl text-center">
-                    <h5 class="font-bold text-blue-700">Disjoint</h5>
-                    <p class="text-[10px] text-blue-600 italic">Rời nhau (0 pts)</p>
-                </div>
-                <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center">
-                    <h5 class="font-bold text-slate-700">Non-intersecting</h5>
-                    <p class="text-[10px] text-slate-600 italic">Không cắt nhau</p>
-                </div>
-            </div>
-
-            <!-- Activity 2: Discovery Lab -->
+            <!-- Discovery Lab Section -->
             <div class="glass-morphism p-6 rounded-2xl shadow-sm border-l-4 border-indigo-500">
                 <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
-                    <i data-lucide="microscope" class="text-indigo-500"></i> Discovery Lab: Compare d and R (18')
+                    <i data-lucide="microscope" class="text-indigo-500"></i> Discovery Lab: Compare d and R
                 </h3>
                 <div class="grid md:grid-cols-2 gap-8">
                     <div class="bg-white p-4 rounded-xl border border-slate-200">
-                        <canvas id="geoCanvas" width="400" height="300" class="w-full bg-slate-50 rounded-lg"></canvas>
-                        <div class="mt-6 px-2">
-                            <label class="block text-sm font-medium mb-3 flex justify-between">
-                                <span>Distance (d)</span>
-                                <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-xs font-bold">d = <span id="distVal">70</span></span>
-                            </label>
-                            <input type="range" id="distSlider" min="0" max="150" value="70" class="w-full accent-indigo-600">
+                        <div class="flex justify-between text-xs font-bold text-slate-400 mb-2 px-1">
+                            <span>Circle (O, R) Fixed</span>
+                            <span class="text-indigo-600">Interact with the slider below</span>
+                        </div>
+                        <canvas id="geoCanvas" width="500" height="400" class="w-full bg-slate-50 rounded-lg border border-slate-100 shadow-inner"></canvas>
+                        <div class="mt-6">
+                            <label class="block text-xs font-bold text-indigo-600 mb-1 uppercase tracking-wider">Distance (d) control:</label>
+                            <input type="range" id="distSlider" min="0" max="180" value="90" class="w-full accent-indigo-600">
                         </div>
                     </div>
-                    
                     <div class="flex flex-col space-y-4">
-                        <div class="p-6 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
-                            <p class="text-sm font-bold text-slate-500 uppercase mb-4 text-center">How does d relate to R?</p>
+                        <div class="p-6 bg-white rounded-2xl border-2 border-slate-200 shadow-sm text-center">
                             <div class="flex items-center justify-center gap-6">
-                                <div class="text-center">
-                                    <div class="text-3xl font-black text-indigo-600 mb-1">d</div>
-                                    <div class="text-xs text-slate-400">Distance</div>
-                                </div>
+                                <div class="text-4xl font-black text-indigo-600 math-style">d</div>
                                 <div class="flex flex-col gap-2">
-                                    <button onclick="checkComparison('<')" id="btn-less" class="comparison-btn w-12 h-12 border-2 border-slate-200 rounded-lg font-black text-xl hover:bg-slate-50">&lt;</button>
-                                    <button onclick="checkComparison('=')" id="btn-equal" class="comparison-btn w-12 h-12 border-2 border-slate-200 rounded-lg font-black text-xl hover:bg-slate-50">=</button>
-                                    <button onclick="checkComparison('>')" id="btn-more" class="comparison-btn w-12 h-12 border-2 border-slate-200 rounded-lg font-black text-xl hover:bg-slate-50">&gt;</button>
+                                    <button onclick="checkComparison('<', this)" class="comparison-btn w-14 h-12 border-2 rounded-lg font-black text-2xl hover:bg-slate-50">&lt;</button>
+                                    <button onclick="checkComparison('=', this)" class="comparison-btn w-14 h-12 border-2 rounded-lg font-black text-2xl hover:bg-slate-50">=</button>
+                                    <button onclick="checkComparison('>', this)" class="comparison-btn w-14 h-12 border-2 rounded-lg font-black text-2xl hover:bg-slate-50">&gt;</button>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-3xl font-black text-emerald-600 mb-1">R</div>
-                                    <div class="text-xs text-slate-400">Radius</div>
-                                </div>
+                                <div class="text-4xl font-black text-emerald-600 math-style">R</div>
                             </div>
-                            <div id="compFeedback" class="mt-6 text-center py-2 px-4 rounded-lg hidden font-bold text-sm">
-                                Correct! Check the position below.
-                            </div>
+                            <div id="compFeedback" class="mt-4 text-sm font-bold hidden p-2 rounded"></div>
                         </div>
-
                         <div id="statusBox" class="p-6 bg-indigo-50 rounded-2xl border-2 border-indigo-100 hidden-element">
-                            <p class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Position Confirmed:</p>
-                            <p id="statusLabel" class="text-2xl font-black text-indigo-900 mt-1">Intersecting</p>
-                            <p class="text-xs text-slate-500 mt-2 italic" id="pointsLabel">(2 shared points)</p>
-                        </div>
-                        
-                        <div id="promptBox" class="p-6 bg-slate-100 rounded-2xl border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 italic text-sm">
-                            Select a relation to reveal position
+                            <p class="text-indigo-600 font-bold text-xs uppercase mb-1">Relative position revealed:</p>
+                            <p id="statusLabel" class="text-2xl font-black text-indigo-900"></p>
+                            <p id="pointsLabel" class="text-sm font-medium text-indigo-500"></p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- UNIT 2 CONTENT -->
-        <section id="lesson2" class="tab-content space-y-8">
+        <!-- UNIT 2 -->
+        <section id="unit2" class="tab-content space-y-8">
+            <div class="bg-white p-8 rounded-2xl shadow-md border border-indigo-100">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="list-checks" class="text-indigo-600"></i> Indicators of Tangent Line
+                    </h3>
+                    <div class="flex gap-3">
+                        <button onclick="resetIndicators()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl font-bold text-sm">Reset</button>
+                        <button onclick="checkIndicatorAnswers()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-xl font-bold shadow-md flex items-center gap-2">
+                            <i data-lucide="check-circle"></i> Check Answers
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 mb-10">
+                    <div class="space-y-4">
+                        <div class="bg-slate-50 p-6 rounded-2xl border-2 border-slate-100 flex flex-col items-center">
+                            <svg viewBox="0 0 200 130" class="w-full h-44">
+                                <circle cx="100" cy="40" r="30" fill="none" stroke="#6366f1" stroke-width="2.5"/>
+                                <circle cx="100" cy="40" r="2" fill="#6366f1"/>
+                                <text x="105" y="35" class="math-style" font-size="12">O</text>
+                                <line x1="20" y1="100" x2="180" y2="100" stroke="#334155" stroke-width="2.5"/>
+                                <text x="185" y="105" class="math-style" font-size="12">a</text>
+                                <line x1="100" y1="40" x2="100" y2="100" stroke="#f43f5e" stroke-width="2" stroke-dasharray="4"/>
+                                <path d="M100 90 L110 90 L110 100" class="right-angle"/>
+                                <text x="103" y="115" class="math-style" font-size="12">H</text>
+                                <text x="88" y="75" class="math-style text-rose-500 font-bold" font-size="12">d</text>
+                            </svg>
+                            <p class="text-sm font-bold text-slate-500 mt-2">Figure 1: Non-intersecting (<span class="math-style">OH > R</span>)</p>
+                        </div>
+                        <div class="indicator-drop-group grid gap-3">
+                            <div class="drop-zone" data-correct="perp">Drop criteria here</div>
+                            <div class="drop-zone" data-correct="line_a">Drop criteria here</div>
+                            <div class="drop-zone" data-correct="greater">Drop criteria here</div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-indigo-50 p-6 rounded-2xl border-2 border-indigo-100 flex flex-col items-center">
+                            <svg viewBox="0 0 200 130" class="w-full h-44">
+                                <circle cx="100" cy="50" r="50" fill="none" stroke="#6366f1" stroke-width="2.5"/>
+                                <circle cx="100" cy="50" r="2" fill="#6366f1"/>
+                                <text x="105" y="45" class="math-style" font-size="12">O</text>
+                                <line x1="20" y1="100" x2="180" y2="100" stroke="#334155" stroke-width="2.5"/>
+                                <text x="185" y="105" class="math-style" font-size="12">a</text>
+                                <line x1="100" y1="50" x2="100" y2="100" stroke="#10b981" stroke-width="2.5"/>
+                                <path d="M100 90 L110 90 L110 100" class="right-angle"/>
+                                <text x="103" y="115" class="math-style" font-size="12">H</text>
+                                <text x="88" y="80" class="math-style text-emerald-600 font-bold" font-size="12">d</text>
+                            </svg>
+                            <p class="text-sm font-bold text-emerald-600 mt-2">Figure 2: Tangent (<span class="math-style">OH = R</span>)</p>
+                        </div>
+                        <div class="indicator-drop-group grid gap-3">
+                            <div class="drop-zone" data-correct="perp">Drop criteria here</div>
+                            <div class="drop-zone" data-correct="line_a">Drop criteria here</div>
+                            <div class="drop-zone" data-correct="equal">Drop criteria here</div>
+                            <div class="drop-zone" data-correct="point_o">Drop criteria here</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-100 p-6 rounded-2xl border-2 border-slate-200">
+                    <p class="text-xs font-bold text-slate-500 uppercase mb-5 text-center">Criteria Bank (Reusable items provided):</p>
+                    <div id="criteriaBank" class="flex flex-wrap justify-center gap-4">
+                        <div draggable="true" class="draggable-tag bg-white px-4 py-2.5 rounded-xl shadow-sm border-2 border-indigo-200 text-indigo-700 font-bold text-sm" data-type="perp">OH is perpendicular to a at H</div>
+                        <div draggable="true" class="draggable-tag bg-white px-4 py-2.5 rounded-xl shadow-sm border-2 border-indigo-200 text-indigo-700 font-bold text-sm" data-type="perp">OH is perpendicular to a at H</div>
+                        <div draggable="true" class="draggable-tag bg-white px-4 py-2.5 rounded-xl shadow-sm border-2 border-indigo-200 text-indigo-700 font-bold text-sm" data-type="line_a">H belongs to line a</div>
+                        <div draggable="true" class="draggable-tag bg-white px-4 py-2.5 rounded-xl shadow-sm border-2 border-indigo-200 text-indigo-700 font-bold text-sm" data-type="line_a">H belongs to line a</div>
+                        <div draggable="true" class="draggable-tag bg-rose-50 px-4 py-2.5 rounded-xl shadow-sm border-2 border-rose-200 text-rose-700 font-bold text-sm" data-type="greater"><span class="math-style">OH > R</span></div>
+                        <div draggable="true" class="draggable-tag bg-emerald-50 px-4 py-2.5 rounded-xl shadow-sm border-2 border-emerald-200 text-emerald-700 font-bold text-sm" data-type="equal"><span class="math-style">OH = R</span></div>
+                        <div draggable="true" class="draggable-tag bg-emerald-50 px-4 py-2.5 rounded-xl shadow-sm border-2 border-emerald-200 text-emerald-700 font-bold text-sm" data-type="point_o">H belongs to circle (O)</div>
+                    </div>
+                </div>
+
+                <div class="mt-12 p-8 bg-indigo-600 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center gap-10">
+                    <div class="flex-1 text-center md:text-left">
+                        <h4 class="text-2xl font-black mb-4 flex items-center justify-center md:justify-start gap-3">
+                            <i data-lucide="shield-check" class="w-8 h-8"></i> TANGENT INDICATOR
+                        </h4>
+                        <div class="text-xl leading-relaxed italic bg-white/10 p-6 rounded-2xl border border-white/20 shadow-inner">
+                            “If a line passes through a point on a circle and is perpendicular to the radius of that circle, that line is a <span class="text-yellow-400 font-bold not-italic underline underline-offset-4">tangent</span>.”
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center">
+                        <svg viewBox="0 0 160 160" class="w-44 h-44">
+                            <circle cx="80" cy="80" r="50" fill="none" stroke="#4f46e5" stroke-width="2.5"/>
+                            <line x1="80" y1="80" x2="80" y2="30" stroke="#10b981" stroke-width="3.5"/>
+                            <line x1="20" y1="30" x2="140" y2="30" stroke="#f59e0b" stroke-width="3.5"/>
+                            <path d="M80 40 L90 40 L90 30" class="right-angle"/>
+                            <text x="75" y="25" class="math-style text-slate-900 font-bold" font-size="12">H</text>
+                            <text x="82" y="95" class="math-style text-slate-900 font-bold" font-size="12">O</text>
+                        </svg>
+                        <p class="mt-3 text-slate-800 font-bold math-style">OH ≡ R</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- UNIT 3 -->
+        <section id="unit3" class="tab-content space-y-8">
             <div class="bg-white p-8 rounded-2xl shadow-md border border-indigo-100">
                 <div class="flex items-center gap-4 mb-6">
                     <div class="bg-indigo-600 p-3 rounded-lg text-white"><i data-lucide="ruler"></i></div>
@@ -250,8 +320,6 @@
                             <circle cx="100" cy="100" r="3" fill="#4f46e5"/>
                             <line x1="190" y1="100" x2="100" y2="40" stroke="#1e293b" stroke-width="2"/>
                             <line x1="190" y1="100" x2="100" y2="160" stroke="#1e293b" stroke-width="2"/>
-                            <line x1="100" y1="100" x2="100" y2="40" stroke="#4f46e5" stroke-dasharray="4"/>
-                            <line x1="100" y1="100" x2="100" y2="160" stroke="#4f46e5" stroke-dasharray="4"/>
                             <text x="195" y="105" font-size="12" font-weight="bold">M</text>
                             <text x="95" y="35" font-size="12" font-weight="bold">A</text>
                             <text x="95" y="175" font-size="12" font-weight="bold">B</text>
@@ -260,7 +328,7 @@
                      <div class="space-y-6">
                         <div class="p-6 bg-indigo-50 border-l-8 border-indigo-600 rounded-r-xl">
                             <h4 class="font-bold text-indigo-900 text-lg mb-3">Key Properties:</h4>
-                            <ul class="space-y-3">
+                            <ul class="space-y-3 font-medium">
                                 <li>• MA = MB</li>
                                 <li>• OM is the bisector of ∠AMB</li>
                                 <li>• MO is the bisector of ∠AOB</li>
@@ -273,10 +341,7 @@
     </main>
 
     <script>
-        function initLucide() {
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-            else setTimeout(initLucide, 100);
-        }
+        function initLucide() { if (typeof lucide !== 'undefined') lucide.createIcons(); }
 
         function showTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -285,17 +350,18 @@
                 btn.classList.add('border-transparent', 'text-slate-500');
             });
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.remove('border-transparent', 'text-slate-500');
-            event.currentTarget.classList.add('border-indigo-600', 'text-indigo-600');
-            if(tabId === 'lesson1') drawLab();
+            const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+            if(activeBtn) {
+                activeBtn.classList.remove('border-transparent', 'text-slate-500');
+                activeBtn.classList.add('border-indigo-600', 'text-indigo-600');
+            }
+            if(tabId === 'unit1') drawLab();
         }
 
+        /* --- UNIT 1 LOGIC --- */
         const sun = document.getElementById('sun');
         const sunSlider = document.getElementById('sunSlider');
-        const draggables = document.querySelectorAll('.draggable-tag');
-        const dropZones = document.querySelectorAll('.drop-zone');
-        let score = 0;
-        const correctPlacements = new Set();
+        let currentScore = 0;
 
         sunSlider.oninput = function() {
             const val = parseInt(this.value);
@@ -310,146 +376,191 @@
             document.getElementById('dropZoneContainer').classList.remove('hidden-element');
             document.getElementById('tagPanel').classList.remove('hidden-element');
             document.getElementById('scoreDisplay').classList.remove('hidden-element');
-            document.getElementById('warmupInstruction').innerHTML = `
-                <p>Drag and drop the correct common points tag into the corresponding stage to verify your idea!</p>
-            `;
+            document.getElementById('btnResetChallenge').classList.remove('hidden-element');
             document.getElementById('btnVerify').classList.add('hidden-element');
             initLucide();
         }
 
-        draggables.forEach(tag => {
-            tag.ondragstart = (e) => {
-                e.dataTransfer.setData('text/plain', tag.dataset.id);
-                tag.style.opacity = '0.5';
-            };
-            tag.ondragend = () => tag.style.opacity = '1';
-        });
-
-        dropZones.forEach(zone => {
-            zone.ondragover = (e) => { e.preventDefault(); zone.classList.add('active'); };
-            zone.ondragleave = () => zone.classList.remove('active');
-            zone.ondrop = (e) => {
-                e.preventDefault();
-                zone.classList.remove('active');
-                const tagId = e.dataTransfer.getData('text/plain');
-                const targetId = zone.dataset.target;
-
-                if (tagId === targetId) {
-                    if (!correctPlacements.has(tagId)) {
-                        score++;
-                        correctPlacements.add(tagId);
-                        updateScore();
-                    }
-                    zone.classList.add('bg-green-600', 'border-green-600');
-                    zone.innerHTML = `<span class="text-white text-[12px] font-bold">${document.querySelector(`[data-id="${tagId}"]`).innerText}</span>`;
-                    document.querySelector(`[data-id="${tagId}"]`).style.visibility = 'hidden';
-                } else {
-                    zone.classList.add('bg-red-600');
-                    setTimeout(() => zone.classList.remove('bg-red-600'), 1000);
-                }
-            };
-        });
-
-        function updateScore() {
-            const display = document.getElementById('scoreDisplay');
-            display.innerText = `Score: ${score}/3`;
-            if (score === 3) display.innerText = "Excellent! 🎉";
-        }
-
-        function resetSunrise() {
-            score = 0;
-            correctPlacements.clear();
-            updateScore();
-            dropZones.forEach(zone => {
-                const step = zone.id.split('-')[1];
-                zone.className = "drop-zone w-1/3 h-14 rounded-lg flex flex-col items-center justify-center text-white text-[10px] font-bold text-center p-1";
-                zone.innerHTML = `<span>Stage ${step}</span><span class="opacity-50 italic font-normal">Drop Status Here</span>`;
+        function resetChallenge() {
+            currentScore = 0;
+            document.getElementById('currentScore').innerText = "0";
+            document.getElementById('excellentMsg').classList.add('hidden-element');
+            document.querySelectorAll('#unit1 .drop-zone').forEach(zone => {
+                zone.classList.remove('bg-green-600', 'text-white');
+                zone.innerHTML = `<span>${zone.id.replace('szone-', 'Stage ')}</span><span class="opacity-50 italic font-normal text-[8px]">Drop status tag</span>`;
             });
-            draggables.forEach(tag => tag.style.visibility = 'visible');
-            sunSlider.value = 30;
-            sunSlider.oninput();
+            document.querySelectorAll('#tagPanel .draggable-tag').forEach(t => t.style.visibility = 'visible');
         }
 
         const canvas = document.getElementById('geoCanvas');
         const ctx = canvas.getContext('2d');
         const distSlider = document.getElementById('distSlider');
-        const distVal = document.getElementById('distVal');
-        const statusLabel = document.getElementById('statusLabel');
-        const pointsLabel = document.getElementById('pointsLabel');
-        const feedback = document.getElementById('compFeedback');
-        const statusBox = document.getElementById('statusBox');
-        const promptBox = document.getElementById('promptBox');
-        const R = 70;
-        const centerX = 160;
-        const centerY = 150;
+        // Kích thước vẽ (Scale up)
+        const R = 110; 
+        const centerX = 180; 
+        const centerY = 200;
 
         function drawLab() {
             const d = parseInt(distSlider.value);
-            distVal.innerText = d;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            ctx.strokeStyle = '#f1f5f9';
-            for(let i=0; i<canvas.width; i+=25) {
-                ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,300); ctx.stroke();
-            }
-
-            ctx.beginPath(); ctx.arc(centerX, centerY, R, 0, Math.PI * 2);
-            ctx.strokeStyle = '#10b981'; ctx.setLineDash([]); ctx.lineWidth = 3; ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(centerX, centerY); ctx.lineTo(centerX, centerY - R);
-            ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.stroke();
-            ctx.fillStyle = '#065f46'; ctx.font = 'bold 12px sans-serif'; ctx.fillText(`R = ${R}`, centerX + 5, centerY - R/2);
-
-            const lineX = centerX + d;
-            ctx.beginPath(); ctx.moveTo(centerX, centerY); ctx.lineTo(lineX, centerY);
-            ctx.strokeStyle = '#4f46e5'; ctx.setLineDash([5, 5]); ctx.stroke();
-            ctx.fillText(`d = ${d}`, centerX + d/2 - 15, centerY + 15);
-            ctx.beginPath(); ctx.setLineDash([]); ctx.moveTo(lineX, 20); ctx.lineTo(lineX, 280);
-            ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 4; ctx.stroke();
+            // Vẽ vòng tròn
+            ctx.strokeStyle = '#6366f1'; 
+            ctx.lineWidth = 4;
+            ctx.beginPath(); 
+            ctx.arc(centerX, centerY, R, 0, Math.PI * 2); 
+            ctx.stroke();
             
-            ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.arc(centerX, centerY, 4, 0, Math.PI * 2); ctx.fill();
-            ctx.fillText("O", centerX - 15, centerY + 5);
+            // Vẽ tâm O
+            ctx.fillStyle = '#6366f1'; 
+            ctx.beginPath(); 
+            ctx.arc(centerX, centerY, 4, 0, Math.PI*2); 
+            ctx.fill();
+            ctx.font = "italic bold 20px serif"; 
+            ctx.fillText("O", centerX - 25, centerY - 10);
 
-            statusBox.classList.add('hidden-element');
-            promptBox.classList.remove('hidden');
-            feedback.classList.add('hidden');
-            document.querySelectorAll('.comparison-btn').forEach(btn => btn.classList.remove('selected'));
+            // Vẽ bán kính R cố định (góc 45 độ hướng lên)
+            const angleR = -Math.PI / 4;
+            const rx = centerX + R * Math.cos(angleR);
+            const ry = centerY + R * Math.sin(angleR);
+            ctx.setLineDash([]);
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(rx, ry);
+            ctx.stroke();
+            ctx.fillStyle = '#10b981';
+            ctx.font = "bold 16px serif";
+            ctx.fillText("R = 110", (centerX + rx) / 2 - 10, (centerY + ry) / 2 - 10);
+
+            // Vẽ đường thẳng a
+            const lineX = centerX + d;
+            ctx.beginPath(); 
+            ctx.moveTo(lineX, 30); 
+            ctx.lineTo(lineX, 370);
+            ctx.strokeStyle = '#f43f5e'; 
+            ctx.lineWidth = 5; 
+            ctx.stroke();
+            ctx.fillStyle = '#f43f5e';
+            ctx.fillText("a", lineX + 15, 60);
+
+            // Vẽ đoạn d (Khoảng cách OH)
+            ctx.setLineDash([6, 4]);
+            ctx.beginPath(); 
+            ctx.moveTo(centerX, centerY); 
+            ctx.lineTo(lineX, centerY);
+            ctx.strokeStyle = '#64748b'; 
+            ctx.lineWidth = 2; 
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Vẽ điểm H
+            ctx.fillStyle = '#334155';
+            ctx.beginPath(); ctx.arc(lineX, centerY, 3, 0, Math.PI*2); ctx.fill();
+            ctx.fillText("H", lineX + 10, centerY + 25);
+
+            // Hiển thị d trực tiếp trên hình
+            ctx.fillStyle = '#4f46e5';
+            ctx.font = "bold 18px serif";
+            const dText = "d = " + d;
+            ctx.fillText(dText, centerX + (d / 2) - (ctx.measureText(dText).width / 2), centerY - 10);
         }
 
-        function checkComparison(symbol) {
+        function checkComparison(symbol, btnEl) {
             const d = parseInt(distSlider.value);
-            let correct = false;
-            document.querySelectorAll('.comparison-btn').forEach(btn => btn.classList.remove('selected'));
-            
-            if (symbol === '<' && d < R) correct = true;
-            else if (symbol === '=' && d === R) correct = true;
-            else if (symbol === '>' && d > R) correct = true;
+            const feedback = document.getElementById('compFeedback');
+            const statusLabel = document.getElementById('statusLabel');
+            const pointsLabel = document.getElementById('pointsLabel');
+            const statusBox = document.getElementById('statusBox');
 
-            event.currentTarget.classList.add('selected');
+            // Reset style nút
+            document.querySelectorAll('.comparison-btn').forEach(b => b.classList.remove('selected'));
+            btnEl.classList.add('selected');
+
+            let correct = (symbol === '<' && d < R) || (symbol === '=' && d === R) || (symbol === '>' && d > R);
             feedback.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
             
-            if (correct) {
-                feedback.innerText = "Correct! Position revealed.";
+            if(correct) {
+                feedback.innerText = "Correct! Relationship identified."; 
                 feedback.classList.add('bg-green-100', 'text-green-700');
                 statusBox.classList.remove('hidden-element');
-                promptBox.classList.add('hidden');
                 
-                if (d < R) { statusLabel.innerText = "Intersecting"; pointsLabel.innerText = "(2 shared points)"; }
-                else if (d === R) { statusLabel.innerText = "Tangent"; pointsLabel.innerText = "(1 shared point)"; }
-                else { statusLabel.innerText = "Disjoint / Separate"; pointsLabel.innerText = "(0 shared points)"; }
+                if (d < R) {
+                    statusLabel.innerText = "Intersecting";
+                    pointsLabel.innerText = "(2 shared points)";
+                } else if (d === R) {
+                    statusLabel.innerText = "Tangent";
+                    pointsLabel.innerText = "(1 shared point)";
+                } else {
+                    statusLabel.innerText = "Disjoint / Separate";
+                    pointsLabel.innerText = "(0 shared points)";
+                }
             } else {
-                feedback.innerText = "Incorrect. Try another relation!";
+                feedback.innerText = "Incorrect. Check the distance!"; 
                 feedback.classList.add('bg-red-100', 'text-red-700');
                 statusBox.classList.add('hidden-element');
-                promptBox.classList.remove('hidden');
             }
+        }
+
+        /* --- UNIT 2 LOGIC --- */
+        let draggedEl = null;
+        function setupDragDrop() {
+            document.querySelectorAll('.draggable-tag').forEach(tag => {
+                tag.addEventListener('dragstart', (e) => {
+                    draggedEl = tag;
+                    e.dataTransfer.setData('type', tag.dataset.type || tag.dataset.id);
+                    e.dataTransfer.setData('inner', tag.innerHTML);
+                });
+            });
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', e => e.preventDefault());
+                zone.addEventListener('drop', e => {
+                    const type = e.dataTransfer.getData('type');
+                    const inner = e.dataTransfer.getData('inner');
+                    
+                    if(zone.id.startsWith('szone-')) { // Logic Unit 1
+                        if(type === zone.dataset.target) {
+                            zone.classList.add('bg-green-600', 'text-white');
+                            zone.innerHTML = inner;
+                            if(draggedEl) draggedEl.style.visibility = 'hidden';
+                            currentScore++;
+                            document.getElementById('currentScore').innerText = currentScore;
+                            if(currentScore === 3) document.getElementById('excellentMsg').classList.remove('hidden-element');
+                        }
+                    } else { // Logic Unit 2
+                        zone.innerHTML = inner;
+                        zone.dataset.currentType = type;
+                        zone.classList.add('bg-indigo-600', 'text-white', 'border-solid');
+                        if(draggedEl) draggedEl.style.visibility = 'hidden';
+                    }
+                });
+            });
+        }
+
+        function checkIndicatorAnswers() {
+            document.querySelectorAll('#unit2 .drop-zone').forEach(zone => {
+                if(zone.dataset.currentType === zone.dataset.correct) {
+                    zone.classList.remove('wrong');
+                    zone.classList.add('correct');
+                } else {
+                    zone.classList.remove('correct');
+                    zone.classList.add('wrong');
+                }
+            });
+        }
+
+        function resetIndicators() {
+            document.querySelectorAll('#unit2 .drop-zone').forEach(zone => {
+                zone.innerHTML = "Drop criteria here";
+                zone.className = "drop-zone";
+                delete zone.dataset.currentType;
+            });
+            document.querySelectorAll('#criteriaBank .draggable-tag').forEach(t => t.style.visibility = 'visible');
         }
 
         distSlider.oninput = drawLab;
-        window.onload = () => {
-            initLucide();
-            sunSlider.oninput();
-            drawLab();
-        };
+        window.onload = () => { initLucide(); drawLab(); setupDragDrop(); };
     </script>
 </body>
 </html>
